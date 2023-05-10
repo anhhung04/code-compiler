@@ -741,7 +741,7 @@ bool ArmyKnights::adventure(Events *events)
             delete opponent;
             opponent = nullptr;
         }
-        //cout << "event: " + to_string(event_code) + " i = " + to_string(i) + " --- ";
+        cout << "event: " + to_string(event_code) + " i = " + to_string(i) + " --- ";
         this->printInfo();
     }
     return result;
@@ -1164,9 +1164,10 @@ void Tornbery::interact(BaseKnight *knight)
         }
         else
         {
-            knight->increase_hp(-10);
             for (int i = 0; i < 3; i++)
+            {
                 knight->get_bag()->remove_first_item();
+            }
         }
     }
 }
