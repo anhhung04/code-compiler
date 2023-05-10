@@ -183,7 +183,7 @@ app.post(
         } catch (err) {
             err.httpStatusCode = 400;
             console.log(err);
-            return res.status(500).send("Some thing went wrong");
+            return res.status(502).send("Some thing went wrong");
         }
     }
 );
