@@ -121,7 +121,11 @@ app.post(
                 );
                 const { stderr: outErr, stdout: outOut } = await execFile(
                     path.join(__dirname, "./" + std_id + "/main.exe"),
-                    [`./knights.txt`, `./events.txt`, `${std_id}`]
+                    [
+                        `./${std_id}/knights.txt`,
+                        `./${std_id}/events.txt`,
+                        `${std_id}`,
+                    ]
                 );
                 if (outErr) throw outErr;
                 let knightData = await readFile(`./${std_id}/knights.txt`, {
