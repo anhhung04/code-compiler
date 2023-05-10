@@ -1,0 +1,34 @@
+<%- include("./partial/header"); %>
+<main>
+    <% if(not_pass_tests == 0) { %>
+    <h1>Passed all.</h1>
+    <% }else{ %>
+    <h1>Difference testcases: <%= not_pass_tests %></h1>
+    <div class="table-reponsive box" style="white-space: pre-line">
+<table id="example" class="table table-striped table-bordered">
+<thead>
+    <tr>
+        <th>Input</th>
+        <th>YourOutput</th>
+        <th>MyOutput</th>
+    </tr>
+</thead>
+<tbody>
+    <% not_pass.forEach(function(test){ %>
+    <tr>
+        <td>
+            <h6>Events:</h6>
+            <p><%= test.event_input %></p>
+            <h6>Knights:</h6>
+            <p><%= test.knight_input %></p>
+        </td>
+        <td><%= test.output %></td>
+        <td><%= test.result %></td>
+    </tr>
+    <% }) %>
+</tbody>
+</table>
+<% } %>
+</div>
+</main>
+<%- include('./partial/footer'); %>
