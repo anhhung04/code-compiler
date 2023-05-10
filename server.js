@@ -148,6 +148,7 @@ app.post(
                         event_input: eventData,
                         output: outData,
                         result: resultData,
+                        diff: Diff.diffChars(outData, resultData),
                     });
                 }
                 await unlink(
