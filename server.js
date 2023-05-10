@@ -45,7 +45,7 @@ app.post(
         const events = [
             1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 95, 96, 97, 98, 112, 113, 114,
         ];
-        const nums_of_testcases = 20;
+        const nums_of_testcases = 10;
         let not_pass = [];
         try {
             if (
