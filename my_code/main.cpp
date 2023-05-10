@@ -19,9 +19,9 @@ int main(int argc, char ** argv) {
     string path{};
 
     if(std_id){
-        path = "../src/uploads/mssv"+to_string(std_id)+"/result.txt";
-        file_armyknights = "../src/uploads/mssv" + to_string(std_id) + "/knights.txt";
-        file_events = "../src/uploads/mssv" + to_string(std_id) + "/events.txt";
+        path = "./uploads/mssv" + to_string(std_id) + "/result.txt";
+        file_armyknights = "../uploads/mssv" + to_string(std_id) + "/knights.txt";
+        file_events = "../uploads/mssv" + to_string(std_id) + "/events.txt";
     }else{
         path = "./result.txt";
     }

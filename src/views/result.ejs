@@ -6,37 +6,41 @@
     <h1>Passed all.</h1>
     <% }else{ %>
         <div>
-            You did not pass <% " "+not_pass_tests.length+" " %> test cases.
+            You did not pass <em><%= not_pass_tests %></em> test cases.
         </div>
         <br>
-        <table class="ui celled table">
+        <table class="ui celled table ">
             <tbody>
                 <thead>
                     <tr><th>Input</th>
-                    <th>MyCode</th>
-                    <th>YourCode</th>
+                    <th>MyOutput</th>
+                    <th>YourOutput</th>
                 </tr></thead>
-             <% not_pass.forEach(function(test){ %>
+             <% not_pass.forEach((test) => { %>
                 <tr>
                     <th data-label="Input">
-                        <div>Knights: </div><br>
-                        <div>
-                            <% test.knight_input %>
-                        </div><br>
+                        <p>Knights: </p><br>
+                        <p>
+                            <%= test.knight_input %>
+                        </p>
                         <div>Events: </div><br>
-                        <div>
-                            <% test.event_input %>
-                        </div><br>
+                        <p>
+                            <%= test.event_input %>
+                        </p>
                     </th>
-                    <th data-label="MyCode">
-                        <div>
-                            <% test.result %>
-                        </div>
+                    <th data-label="MyOutput">
+                        <p>
+                            <% test.result.forEach((line) => { %>
+                                <p><%= line %></p><br>
+                            <% }); %>
+                        </p>
                     </th>
-                    <th data-label="YourCode">
-                        <div>
-                            <% test.output %>
-                        </div>
+                    <th data-label="YourOutput">
+                        <p>
+                            <% test.output.forEach((line) => { %>
+                                <p><%= line %></p><br>
+                            <% }); %>
+                        </p>
                     </th>
                 </tr>
             

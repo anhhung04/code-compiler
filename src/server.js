@@ -11,6 +11,7 @@ const rmdir = util.promisify(require("fs").rmdir);
 const unlink = util.promisify(require("fs").unlink);
 const readFile = util.promisify(require("fs").readFile);
 const path = require("path");
+const readline = require("readline");
 //CREATE EXPRESS APP
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("views", path.join(__dirname, "./views"));
@@ -47,10 +48,10 @@ app.post(
         const files = req.files;
         const { std_id } = req.body;
         const events = [
-          1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 95, 96, 97, 98, 112, 113,
-          114,
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 95, 96, 97, 98, 112, 113, 114,
         ];
-      const nums_of_testcases = 10;
+        const nums_of_testcases = 10;
+        let not_pass = [];
         try {
             if (
                 !files ||
@@ -61,11 +62,10 @@ app.post(
                 const error = new Error("Error");
                 throw error;
             }
-            
+
             await exec(
                 `g++ -g -o ./uploads/mssv${std_id}/main ./uploads/mssv${std_id}/main.cpp ./uploads/mssv${std_id}/knight2.cpp -I . -std=c++11`
             );
-            let not_pass = [];
             for (let i = 0; i < nums_of_testcases; i++) {
                 const nums_events = rand(100);
                 const nums_knight = rand(200);
@@ -94,15 +94,15 @@ app.post(
                 knight += knights.join("\n");
                 await writeFile(`./uploads/mssv${std_id}/events.txt`, event);
                 await writeFile(`./uploads/mssv${std_id}/knights.txt`, knight);
-                await execFile(`../my_code/main.exe`, [
-                    `../src/uploads/mssv${std_id}/knights.txt`,
-                    `../src/uploads/mssv${std_id}/events.txt`,
-                    `${std_id}`
+                await execFile(`./my_code/main.exe`, [
+                    `../uploads/mssv${std_id}/knights.txt`,
+                    `../uploads/mssv${std_id}/events.txt`,
+                    `${std_id}`,
                 ]);
-                await execFile(`./uploads/mssv${std_id}/main.exe`,[
+                await execFile(`./uploads/mssv${std_id}/main.exe`, [
                     `./knights.txt`,
                     `./events.txt`,
-                    `${std_id}`
+                    `${std_id}`,
                 ]);
                 let knightData = await readFile(
                     `./uploads/mssv${std_id}/knights.txt`,
@@ -116,29 +116,54 @@ app.post(
                         encoding: "utf-8",
                     }
                 );
-                let outData = await readFile(
-                    `./uploads/mssv${std_id}/output.txt`,
-                    {
-                        encoding: "utf-8",
-                    }
-                );
-                let resultData = await readFile(
-                    `./uploads/mssv${std_id}/result.txt`,
-                    {
-                        encoding: "utf-8",
-                    }
-                );
-                let accepted = outData == resultData;
+                let accepted = true;
                 if (!accepted) {
-                    not_pass.push({
-                        knight_input: knightData,
-                        event_input: eventData,
-                        output: outData,
-                        result: resultData,
+                    let outData = [];
+                    let outStream = fs.createReadStream(
+                        path.join(
+                            __dirname,
+                            "../uploads/mssv" + std_id + "/output.txt"
+                        )
+                    );
+                    const rlOut = readline.createInterface({
+                        input: outStream,
+                        crlfDelay: Infinity,
                     });
+                    for await (const line of rlOut) {
+                        outData.push(line);
+                    }
+                    let resultData = [];
+                    const rlResult = readline.createInterface({
+                        input: fs.createReadStream(
+                            path.join(
+                                __dirname,
+                                "../uploads/mssv" + std_id + "/result.txt"
+                            )
+                        ),
+                        crlfDelay: Infinity,
+                    });
+                    for await (const line of rlResult) {
+                        resultData.push(line);
+                    }
+                    accepted = outData.every(
+                        (value, index) => value == resultData[index]
+                    );
+
+                    if (!accepted) {
+                        not_pass.push({
+                            knight_input: knightData,
+                            event_input: eventData,
+                            output: outData,
+                            result: resultData,
+                        });
+                    }
                 }
-                await unlink(path.join(`./uploads/mssv${std_id}`, "result.txt"));
-                await unlink(path.join(`./uploads/mssv${std_id}`, "output.txt"));
+                await unlink(
+                    path.join(`./uploads/mssv${std_id}`, "result.txt")
+                );
+                await unlink(
+                    path.join(`./uploads/mssv${std_id}`, "output.txt")
+                );
             }
 
             for (const file of fs.readdirSync(`./uploads/mssv${std_id}`)) {
@@ -147,9 +172,10 @@ app.post(
             await rmdir(`./uploads/mssv${std_id}`, {
                 force: true,
             });
-            res.render("result",{
+            //console.log(not_pass);
+            res.render("result", {
                 not_pass_tests: not_pass.length,
-                not_pass,
+                not_pass: not_pass,
             });
         } catch (err) {
             err.httpStatusCode = 400;
