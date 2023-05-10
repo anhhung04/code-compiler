@@ -19,14 +19,12 @@ int main(int argc, char ** argv) {
     string path{};
 
     if(std_id){
-        path = "./uploads/mssv" + to_string(std_id) + "/result.txt";
-        file_armyknights = "../uploads/mssv" + to_string(std_id) + "/knights.txt";
-        file_events = "../uploads/mssv" + to_string(std_id) + "/events.txt";
+        path = "./" + to_string(std_id) + "/result.txt";
     }else{
         path = "./result.txt";
     }
     const char* cpath = path.c_str();
-    freopen(cpath, "a", stdout);
+    freopen(cpath, "w+", stdout);
     // BEBGIN
     KnightAdventure * knightAdventure = new KnightAdventure();
     knightAdventure->loadArmyKnights(file_armyknights);
