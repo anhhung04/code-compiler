@@ -180,7 +180,7 @@ app.post(
         } catch (err) {
             err.httpStatusCode = 400;
             console.log(err);
-            return next(new Error("Something went wrong")));
+            return next(new Error("Something went wrong"));
         }
     }
 );
