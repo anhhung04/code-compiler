@@ -1,0 +1,17 @@
+<%- include("./partial/header"); %>
+<main>
+    <br>
+    <br>
+    <form action="/uploadmultiple"  enctype="multipart/form-data" method="POST">
+        <label for="std_id">MSSV</label>
+        <input type="text" name="std_id">
+        <br>
+        <br>
+        <label for="myFiles"> Select files:</label>
+        <input type="file" name="myFiles" multiple>
+        <input type="submit" value="Upload your files"/>
+    </form>
+    <br>
+    <br>
+</main>
+<%- include('./partial/footer'); %>

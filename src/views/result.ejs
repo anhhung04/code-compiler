@@ -1,0 +1,50 @@
+<%- include("./partial/header"); %>
+<main>
+    <% if (not_pass_tests == 0) {%>
+        <br>
+        <br>
+    <h1>Passed all.</h1>
+    <% }else{ %>
+        <div>
+            You did not pass <% " "+not_pass_tests.length+" " %> test cases.
+        </div>
+        <br>
+        <table class="ui celled table">
+            <tbody>
+                <thead>
+                    <tr><th>Input</th>
+                    <th>MyCode</th>
+                    <th>YourCode</th>
+                </tr></thead>
+             <% not_pass.forEach(function(test){ %>
+                <tr>
+                    <th data-label="Input">
+                        <div>Knights: </div><br>
+                        <div>
+                            <% test.knight_input %>
+                        </div><br>
+                        <div>Events: </div><br>
+                        <div>
+                            <% test.event_input %>
+                        </div><br>
+                    </th>
+                    <th data-label="MyCode">
+                        <div>
+                            <% test.result %>
+                        </div>
+                    </th>
+                    <th data-label="YourCode">
+                        <div>
+                            <% test.output %>
+                        </div>
+                    </th>
+                </tr>
+            
+                <% }) %>
+            </tbody>
+          </table>
+        
+        
+    <% } %>
+</main>
+<%- include('./partial/footer'); %>
