@@ -16,6 +16,8 @@ const readline = require("readline");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("views", path.join(__dirname, "./views"));
 app.set("view engine", "ejs");
+
+const delay = (ms) => new Promise((res) => setTimeout(res, ms));
 function rand(i, a = 0) {
     return Math.floor(Math.random() * (i - a + 1)) + a;
 }
@@ -66,6 +68,7 @@ app.post(
             await exec(
                 `g++ -g -o ./uploads/mssv${std_id}/main ./uploads/mssv${std_id}/main.cpp ./uploads/mssv${std_id}/knight2.cpp -I . -std=c++11`
             );
+            await delay(500);
             for (let i = 0; i < nums_of_testcases; i++) {
                 const nums_events = rand(100);
                 const nums_knight = rand(200);
