@@ -14,7 +14,7 @@ const path = require("path");
 //CREATE EXPRESS APP
 app.use(bodyParser.urlencoded({ extended: true }));
 app.set("views", path.join(__dirname, "../views"));
-
+app.set("view engine", "ejs");
 function rand(i, a = 0) {
     return Math.floor(Math.random() * (i - a + 1)) + a;
 }
