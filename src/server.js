@@ -179,7 +179,8 @@ app.post(
             });
         } catch (err) {
             err.httpStatusCode = 400;
-            return next(err);
+            console.log(err);
+            return next(new Error("Something went wrong")));
         }
     }
 );
