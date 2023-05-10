@@ -184,12 +184,15 @@ app.get("/", function (req, res) {
 
 app.get("/reCompile", async function (req, res) {
     try {
-        const { stderr, stdout } = await exec(
+        const { stderr: err1, stdout: out1 } = await exec(
             `g++ -g -o main ./my_code/main.cpp ./my_code/knight2.cpp -I . -std=c++11`
         );
-        if (stderr) throw stderr;
+        const { stderr: err2, stdout: out2 } = await exec(
+            `g++ -g -o mainDebug ./my_code/main.cpp ./my_code/knight2.cpp -I . -std=c++11`
+        );
+        if (err1 || err2) throw [err1, err2];
         res.send({
-            stdout,
+            stdout: [out1, out2],
             message: "Compile success",
         });
     } catch (err) {
