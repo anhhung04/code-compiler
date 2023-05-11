@@ -34,7 +34,7 @@ async function sendDefaultFiles(req, res, next) {
         }
 
         await exec(
-            `g++ -g -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -I . -std=c++11`
+            `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
 
         for (let i = 0; i < nums_of_testcases; i++) {
@@ -85,11 +85,11 @@ async function sendDefaultFiles(req, res, next) {
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { stderr: resultErr, stdout: resultOut } = await execFile(
-                path.join(__dirname, `../main${debug ? "Debug" : ""}.exe`),
+                path.join(__dirname, `../main${debug ? "Debug" : ""}`),
                 [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
             );
             const { stderr: outErr, stdout: outOut } = await execFile(
-                path.join(__dirname, "../" + std_id + "/main.exe"),
+                path.join(__dirname, "../" + std_id + "/main"),
                 [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
             );
             if (resultErr) throw resultErr;
