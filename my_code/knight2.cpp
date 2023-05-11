@@ -609,6 +609,11 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
     ifstream knight_file(file_armyknights);
     int num_of_knights{0};
     knight_file >> num_of_knights;
+    if (!num_of_knights)
+    {
+        cout << "Invalid number of knights" << endl;
+        exit(1);
+    }
     this->size = num_of_knights;
     for (int i = 0; i < num_of_knights; i++)
     {
@@ -948,6 +953,11 @@ Events::Events(const string &file_events)
     ifstream event_file(file_events);
     int num_of_events{0};
     event_file >> num_of_events;
+    if (!num_of_events)
+    {
+        cout << "No events found in file " << file_events << endl;
+        exit(1);
+    }
     this->size = num_of_events;
     this->event_codes = new int[size];
     for (int i = 0; i < num_of_events; i++)
