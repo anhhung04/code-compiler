@@ -6,7 +6,7 @@ int main(int argc, char **argv)
     // int std_id = 0;
     if (argc == 3)
     {
-        std_id = atoi(argv[3]);
+        // std_id = atoi(argv[3]);
         file_armyknights = argv[1]; // hard-code
         file_events = argv[2];
     }

@@ -15,7 +15,7 @@ async function compileExecFiles(req, res, next) {
             message: "Compile success",
         });
     } catch (err) {
-        res.json(500).send(err);
+        res.status(500).send(err);
     }
 }
 

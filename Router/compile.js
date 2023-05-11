@@ -3,6 +3,6 @@ const { compileExecFiles } = require("../Controller/compile");
 
 const compileRouter = new Router();
 
-compileRouter.post("/", compileExecFiles);
+compileRouter.get("/", compileExecFiles);
 
 module.exports = compileRouter;

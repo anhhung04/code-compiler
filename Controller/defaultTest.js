@@ -2,9 +2,10 @@ const util = require("node:util");
 const fs = require("node:fs");
 const writeFile = util.promisify(fs.writeFile);
 const execFile = util.promisify(require("node:child_process").execFile);
+const exec = util.promisify(require("node:child_process").exec);
 const rmdir = util.promisify(fs.rmdir);
 const unlink = util.promisify(fs.unlink);
-const readFile = util.promisify(fs.readFile);
+//const readFile = util.promisify(fs.readFile);
 const path = require("path");
 
 function rand(i, a = 0) {
@@ -17,7 +18,7 @@ async function sendDefaultFiles(req, res, next) {
     const events = [
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 95, 96, 97, 98, 112, 113, 114,
     ];
-    const nums_of_testcases = 10;
+    const nums_of_testcases = 100;
     let not_pass = [];
     try {
         if (
@@ -40,12 +41,14 @@ async function sendDefaultFiles(req, res, next) {
             const nums_events = rand(
                 [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].at(
                     Math.floor(Math.random() * 10)
-                ) * 1000
+                ) * 1000,
+                1
             );
             const nums_knight = rand(
                 [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1].at(
                     Math.floor(Math.random() * 10)
-                ) * 500
+                ) * 500,
+                1
             );
             let event = nums_events + "\n";
             let knight = nums_knight + "\n";
@@ -82,20 +85,12 @@ async function sendDefaultFiles(req, res, next) {
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { stderr: resultErr, stdout: resultOut } = await execFile(
-                path.join(__dirname, `./main${debug ? "Debug" : ""}.exe`),
-                [
-                    `./${std_id}/knights.txt`,
-                    `./${std_id}/events.txt`,
-                    `${std_id}`,
-                ]
+                path.join(__dirname, `../main${debug ? "Debug" : ""}.exe`),
+                [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
             );
             const { stderr: outErr, stdout: outOut } = await execFile(
-                path.join(__dirname, "./" + std_id + "/main.exe"),
-                [
-                    `./${std_id}/knights.txt`,
-                    `./${std_id}/events.txt`,
-                    `${std_id}`,
-                ]
+                path.join(__dirname, "../" + std_id + "/main.exe"),
+                [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
             );
             if (resultErr) throw resultErr;
             if (outErr) throw outErr;
@@ -110,8 +105,6 @@ async function sendDefaultFiles(req, res, next) {
                     result: resultOut,
                 });
             }
-            await unlink(path.join(__dirname, "./" + std_id + "/output.txt"));
-            await unlink(path.join(__dirname, "./" + std_id + "/result.txt"));
         }
 
         for (const file of fs.readdirSync(`./${std_id}`)) {

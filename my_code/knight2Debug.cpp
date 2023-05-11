@@ -1171,6 +1171,7 @@ void Tornbery::interact(BaseKnight *knight)
             {
                 knight->get_bag()->remove_first_item();
             }
+            knight->increase_hp(-10);
         }
     }
 }
