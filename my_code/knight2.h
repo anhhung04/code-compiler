@@ -92,7 +92,7 @@ protected:
     BaseKnight* next_knight=nullptr;
     KnightType knightType;
 public:
-    BaseKnight(int id, int maxhp, int level, int gil, int antidote);
+    BaseKnight(int _id, int _maxhp, int _level, int _gil);
     ~BaseKnight();
     int get_hp() const;
     int get_maxhp() const;
@@ -111,30 +111,30 @@ public:
     void grab_item(ItemType item);
     BaseKnight* get_next_knight();
     KnightType get_knightType() const;
-    static BaseKnight *create(int id, int maxhp, int level, int gil, int antidote, int phoenixdownI);
+    static BaseKnight *create(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdownI);
     string toString() const;
 };
 
 class PaladinKnight : public BaseKnight
 {
 public:
-    PaladinKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown);
+    PaladinKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown);
 };
 
 class LancelotKnight : public BaseKnight
 {
 public:
-    LancelotKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown);
+    LancelotKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown);
 };
 class DragonKnight : public BaseKnight
 {
 public:
-    DragonKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown);
+    DragonKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown);
 };
 class NormalKnight : public BaseKnight
 {
 public:
-    NormalKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown);
+    NormalKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown);
 };
 class ArmyKnights
 {

@@ -301,35 +301,35 @@ void BaseKnight::set_hp(int _hp)
         this->hp = this->maxhp;
 }
 
-BaseKnight *BaseKnight::create(int id, int maxhp, int level, int gil, int antidote, int phoenixdown)
+BaseKnight *BaseKnight::create(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown)
 {
-    if (maxhp == 888)
+    if (_maxhp == 888)
     {
-        return new LancelotKnight(id, maxhp, level, gil, antidote, phoenixdown);
+        return new LancelotKnight(_id, _maxhp, _level, _gil, _antidote, _phoenixdown);
     }
-    else if (is_pythagoras(maxhp))
+    else if (is_pythagoras(_maxhp))
     {
-        return new DragonKnight(id, maxhp, level, gil, antidote, phoenixdown);
+        return new DragonKnight(_id, _maxhp, _level, _gil, _antidote, _phoenixdown);
     }
-    else if (is_prime(maxhp))
+    else if (is_prime(_maxhp))
     {
-        return new PaladinKnight(id, maxhp, level, gil, antidote, phoenixdown);
+        return new PaladinKnight(_id, _maxhp, _level, _gil, _antidote, _phoenixdown);
     }
     else
     {
-        return new NormalKnight(id, maxhp, level, gil, antidote, phoenixdown);
+        return new NormalKnight(_id, _maxhp, _level, _gil, _antidote, _phoenixdown);
     }
     return nullptr;
 }
 
-BaseKnight::BaseKnight(int id, int maxhp, int level, int gil, int antidote)
+BaseKnight::BaseKnight(int id, int maxhp, int level, int gil)
 {
     this->id = id;
     this->maxhp = maxhp;
     this->hp = maxhp;
     this->level = level;
     this->gil = gil;
-    this->antidote = antidote;
+    this->antidote = 0;
     this->next_knight = nullptr;
     this->knightType = KnightType::NORMAL;
 }
@@ -483,12 +483,12 @@ void BaseKnight::increase_gil(int _gil)
         this->gil = 0;
 }
 
-PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown) : BaseKnight(id, maxhp, level, gil, antidote)
+PaladinKnight::PaladinKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown) : BaseKnight(_id, _maxhp, _level, _gil)
 {
     this->knightType = KnightType::PALADIN;
     this->bag = new PaladinBag();
     bool insert = true;
-    for (int i = 0; i < phoenixdown && insert; i++)
+    for (int i = 0; i < _phoenixdown && insert; i++)
     {
         BaseItem *phoenixdown_item = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_item);
@@ -498,7 +498,7 @@ PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote
             phoenixdown_item = nullptr;
         }
     }
-    for (int i = 0; i < antidote && insert; i++)
+    for (int i = 0; i < _antidote && insert; i++)
     {
         BaseItem *antidote_item = new Antidote();
         insert = this->bag->insertFirst(antidote_item);
@@ -507,15 +507,16 @@ PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote
             delete antidote_item;
             antidote_item = nullptr;
         }
+        this->antidote += 1;
     }
 }
 
-NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown) : BaseKnight(id, maxhp, level, gil, antidote)
+NormalKnight::NormalKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown) : BaseKnight(_id, _maxhp, _level, _gil)
 {
     this->knightType = KnightType::NORMAL;
     this->bag = new NormalBag();
     bool insert = true;
-    for (int i = 0; i < phoenixdown && insert; i++)
+    for (int i = 0; i < _phoenixdown && insert; i++)
     {
         BaseItem *phoenixdown_i = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_i);
@@ -525,7 +526,7 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
             phoenixdown_i = nullptr;
         }
     }
-    for (int i = 0; i < antidote && insert; i++)
+    for (int i = 0; i < _antidote && insert; i++)
     {
         BaseItem *antidote_item = new Antidote();
         insert = this->bag->insertFirst(antidote_item);
@@ -534,15 +535,16 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
             delete antidote_item;
             antidote_item = nullptr;
         }
+        this->antidote += 1;
     }
 }
 
-DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown) : BaseKnight(id, maxhp, level, gil, antidote)
+DragonKnight::DragonKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown) : BaseKnight(_id, _maxhp, _level, _gil)
 {
     this->knightType = KnightType::DRAGON;
     this->bag = new DragonBag();
     bool insert = true;
-    for (int i = 0; i < phoenixdown && insert; i++)
+    for (int i = 0; i < _phoenixdown && insert; i++)
     {
         BaseItem *phoenixdown_i = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_i);
@@ -554,12 +556,12 @@ DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, 
     }
 }
 
-LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antidote, int phoenixdown) : BaseKnight(id, maxhp, level, gil, antidote)
+LancelotKnight::LancelotKnight(int _id, int _maxhp, int _level, int _gil, int _antidote, int _phoenixdown) : BaseKnight(_id, _maxhp, _level, _gil)
 {
     this->knightType = KnightType::LANCELOT;
     this->bag = new LancelotBag();
     bool insert = true;
-    for (int i = 0; i < phoenixdown && insert; i++)
+    for (int i = 0; i < _phoenixdown && insert; i++)
     {
         BaseItem *phoenixdown_i = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_i);
@@ -569,7 +571,7 @@ LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antido
             phoenixdown_i = nullptr;
         }
     }
-    for (int i = 0; i < antidote && insert; i++)
+    for (int i = 0; i < _antidote && insert; i++)
     {
         BaseItem *antidote_i = new Antidote();
         insert = this->bag->insertFirst(antidote_i);
@@ -578,6 +580,7 @@ LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antido
             delete antidote_i;
             antidote_i = nullptr;
         }
+        this->antidote += 1;
     }
 }
 /* * * END implementation of class BaseKnight * * */
