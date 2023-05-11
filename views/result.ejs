@@ -14,7 +14,7 @@
                 </tr>
             </thead>
             <tbody>
-                <% not_pass.forEach(function(test, index){ %>
+                <% not_pass.forEach(function(test){ %>
                 <tr>
                     <td>
                         <h6>Events:</h6>
@@ -22,8 +22,16 @@
                         <h6>Knights:</h6>
                         <p><%= test.knight_input %></p>
                     </td>
-                    <td><%= test.output %></td>
-                    <td><%= test.result %></td>
+                    <td>
+                        <% test.result.forEach((line)=> {%>
+                            <% if(line.diff){ %><span style="background-color:aquamarine;"><%=line.text%></span><% }else{ %><%=line.text%><% } %>
+                        <% }); %>              
+                    </td>
+                    <td>
+                            <% test.output.forEach((line)=> {%>
+                                <% if(line.diff){ %><span style="background-color: coral;"><%=line.text%></span><% }else{ %><%=line.text%><% } %>
+                            <% }); %>     
+                    </td>
                 </tr>
                 <% }) %>
             </tbody>

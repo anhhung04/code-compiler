@@ -33,14 +33,34 @@ async function sendDefaultFiles(req, res, next) {
             if (resultErr) throw resultErr;
             if (outErr) throw outErr;
 
-            let accepted = outOut == resultOut;
+            let accepted = true;
+            let outArr = outOut.split("\n");
+            let resultArr = resultOut.split("\n");
+            for (let i = 0; i < outArr.length; i++) {
+                outArr[i] = {
+                    text: outArr[i].trim().replace("\r", "").replace("\n", ""),
+                    diff: false,
+                };
+                resultArr[i] = {
+                    text: resultArr[i]
+                        .trim()
+                        .replace("\r", "")
+                        .replace("\n", ""),
+                    diff: false,
+                };
+                if (outArr[i].text != resultArr[i].text) {
+                    outArr[i].diff = true;
+                    resultArr[i].diff = true;
+                    accepted = false;
+                }
+            }
 
             if (!accepted) {
                 not_pass.push({
                     knight_input: knight,
                     event_input: event,
-                    output: outOut,
-                    result: resultOut,
+                    output: outArr,
+                    result: resultArr,
                 });
             }
         }
@@ -60,7 +80,7 @@ async function sendDefaultFiles(req, res, next) {
         if (err.stderr) {
             return res.status(502).send(err.stderr);
         }
-        next(err);
+        return res.status(502).send("Bad request");
     }
 }
 
