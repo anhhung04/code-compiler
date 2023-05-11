@@ -322,13 +322,13 @@ BaseKnight *BaseKnight::create(int _id, int _maxhp, int _level, int _gil, int _a
     return nullptr;
 }
 
-BaseKnight::BaseKnight(int id, int maxhp, int level, int gil)
+BaseKnight::BaseKnight(int _id, int _maxhp, int _level, int _gil)
 {
-    this->id = id;
-    this->maxhp = maxhp;
-    this->hp = maxhp;
-    this->level = level;
-    this->gil = gil;
+    this->id = _id;
+    this->maxhp = _maxhp;
+    this->hp = _maxhp;
+    this->level = _level;
+    this->gil = _gil;
     this->antidote = 0;
     this->next_knight = nullptr;
     this->knightType = KnightType::NORMAL;
