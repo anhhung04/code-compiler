@@ -5,23 +5,24 @@ bool is_pythagoras(int n)
     if (n <= 100)
         return false;
     int a = n % 10, b = (n / 10) % 10, c = n / 100;
-    if(a*b*c == 0) return false;
+    if (a * b * c == 0)
+        return false;
     return (a * a + b * b == c * c) || (a * a + c * c == b * b) || (b * b + c * c == a * a);
 }
 
 bool is_prime(int n)
 {
-    if (n <= 1) {
+    if (n <= 1)
+    {
         return false;
     }
-    for (int i = 2; i*i <= n; i++)
+    for (int i = 2; i * i <= n; i++)
     {
         if (n % i == 0)
             return false;
     }
     return true;
 }
-
 
 /* * * BEGIN implementation of class BaseBag * * */
 
@@ -30,7 +31,8 @@ PaladinBag::PaladinBag()
     this->max_size = MAX_INT;
 }
 
-PaladinBag::~PaladinBag(){
+PaladinBag::~PaladinBag()
+{
     BaseItem *item = this->get_first_item();
     while (item)
     {
@@ -45,7 +47,8 @@ LancelotBag::LancelotBag()
     this->max_size = 16;
 }
 
-LancelotBag::~LancelotBag(){
+LancelotBag::~LancelotBag()
+{
     BaseItem *item = this->get_first_item();
     while (item)
     {
@@ -107,7 +110,6 @@ NormalBag::~NormalBag()
     item = nullptr;
 }
 
-
 bool NormalBag::insertFirst(BaseItem *item)
 {
     if (this->size >= this->max_size || item == nullptr)
@@ -124,7 +126,6 @@ bool NormalBag::insertFirst(BaseItem *item)
     }
     return true;
 }
-
 
 bool DragonBag::insertFirst(BaseItem *item)
 {
@@ -492,7 +493,7 @@ PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote
     {
         BaseItem *phoenixdown_item = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_item);
-        if(!insert)
+        if (!insert)
         {
             delete phoenixdown_item;
             phoenixdown_item = nullptr;
@@ -502,7 +503,7 @@ PaladinKnight::PaladinKnight(int id, int maxhp, int level, int gil, int antidote
     {
         BaseItem *antidote_item = new Antidote();
         insert = this->bag->insertFirst(antidote_item);
-        if(!insert)
+        if (!insert)
         {
             delete antidote_item;
             antidote_item = nullptr;
@@ -519,7 +520,7 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
     {
         BaseItem *phoenixdown_i = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_i);
-        if(!insert)
+        if (!insert)
         {
             delete phoenixdown_i;
             phoenixdown_i = nullptr;
@@ -529,7 +530,7 @@ NormalKnight::NormalKnight(int id, int maxhp, int level, int gil, int antidote, 
     {
         BaseItem *antidote_item = new Antidote();
         insert = this->bag->insertFirst(antidote_item);
-        if(!insert)
+        if (!insert)
         {
             delete antidote_item;
             antidote_item = nullptr;
@@ -546,7 +547,7 @@ DragonKnight::DragonKnight(int id, int maxhp, int level, int gil, int antidote, 
     {
         BaseItem *phoenixdown_i = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_i);
-        if(!insert)
+        if (!insert)
         {
             delete phoenixdown_i;
             phoenixdown_i = nullptr;
@@ -563,7 +564,7 @@ LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antido
     {
         BaseItem *phoenixdown_i = new PhoenixDownI();
         insert = this->bag->insertFirst(phoenixdown_i);
-        if(!insert)
+        if (!insert)
         {
             delete phoenixdown_i;
             phoenixdown_i = nullptr;
@@ -573,7 +574,7 @@ LancelotKnight::LancelotKnight(int id, int maxhp, int level, int gil, int antido
     {
         BaseItem *antidote_i = new Antidote();
         insert = this->bag->insertFirst(antidote_i);
-        if(!insert)
+        if (!insert)
         {
             delete antidote_i;
             antidote_i = nullptr;
@@ -615,7 +616,8 @@ ArmyKnights::ArmyKnights(const string &file_armyknights)
         int maxhp, level, gil, antidote, phoenixdown;
         knight_file >> maxhp >> level >> phoenixdown >> gil >> antidote;
         BaseKnight *new_knight = BaseKnight::create(i + 1, maxhp, level, gil, antidote, phoenixdown);
-        if(!new_knight){
+        if (!new_knight)
+        {
             cout << "Error: Invalid knight type" << endl;
             exit(1);
         }
@@ -741,7 +743,7 @@ bool ArmyKnights::adventure(Events *events)
             delete opponent;
             opponent = nullptr;
         }
-        // cout << "event: " + to_string(event_code) + " i = " + to_string(i) + " --- ";
+        cout << "event: " + to_string(event_code) + " i = " + to_string(i) + " --- ";
         this->printInfo();
     }
     return result;
@@ -794,8 +796,9 @@ bool ArmyKnights::fight(BaseOpponent *opponent)
     if (knight->get_hp() <= 0)
     {
         this->remove_last_knight();
-        if(this->count()<=0 || !this->lastKnight()) return false;
-        //return this->fight(opponent);
+        if (this->count() <= 0 || !this->lastKnight())
+            return false;
+        // return this->fight(opponent);
     }
     return true;
 }
@@ -1008,42 +1011,42 @@ BaseOpponent *BaseOpponent::create(int event_code, int event_index)
     BaseOpponent *opponent{};
     switch (event_code)
     {
-        case 1:
-            opponent = new MadBear(level);
-            break;
-        case 2:
-            opponent = new Bandit(level);
-            break;
-        case 3:
-            opponent = new LordLupin(level);
-            break;
-        case 4:
-            opponent = new Elf(level);
-            break;
-        case 5:
-            opponent = new Troll(level);
-            break;
-        case 6:
-            opponent = new Tornbery(level);
-            break;
-        case 7:
-            opponent = new QueenOfCards(level);
-            break;
-        case 8:
-            opponent = new NinaDeRings();
-            break;
-        case 9:
-            opponent = new DurianGarden();
-            break;
-        case 10:
-            opponent = new OmegaWeapon();
-            break;
-        case 11:
-            opponent = new Hades();
-            break;
-        default:
-            opponent = nullptr;
-            break;
+    case 1:
+        opponent = new MadBear(level);
+        break;
+    case 2:
+        opponent = new Bandit(level);
+        break;
+    case 3:
+        opponent = new LordLupin(level);
+        break;
+    case 4:
+        opponent = new Elf(level);
+        break;
+    case 5:
+        opponent = new Troll(level);
+        break;
+    case 6:
+        opponent = new Tornbery(level);
+        break;
+    case 7:
+        opponent = new QueenOfCards(level);
+        break;
+    case 8:
+        opponent = new NinaDeRings();
+        break;
+    case 9:
+        opponent = new DurianGarden();
+        break;
+    case 10:
+        opponent = new OmegaWeapon();
+        break;
+    case 11:
+        opponent = new Hades();
+        break;
+    default:
+        opponent = nullptr;
+        break;
     }
     return opponent;
 }
