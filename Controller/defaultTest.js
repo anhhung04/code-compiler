@@ -85,10 +85,7 @@ async function sendDefaultFiles(req, res, next) {
                 force: true,
             });
         }
-        if (err.stderr) {
-            return res.status(502).send(err.stderr);
-        }
-        return res.status(502).send("Bad request");
+        return res.status(500).send(err);
     }
 }
 

@@ -16,7 +16,7 @@ async function sendMemoryLeakFiles(req, res, next) {
         const { stdout, stderr: compileErr } = await exec(
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
-        if (compileErr) throw compileErr;
+        
         leaked_test_cases = [];
         for (let i = 0; i < 5; i++) {
             let { event, knight } = testcase();
@@ -34,7 +34,10 @@ async function sendMemoryLeakFiles(req, res, next) {
                     event_input: event,
                     knight_input: knight,
                     output: outOut,
-                    error: outErr.split("\n").slice(4).join("\n"),
+                    error:
+                        compileErr +
+                        "\n" +
+                        outErr.split("\n").slice(4).join("\n"),
                 });
             }
         }
@@ -56,10 +59,7 @@ async function sendMemoryLeakFiles(req, res, next) {
                 force: true,
             });
         }
-        if (err.stderr) {
-            return res.status(502).send(err.stderr);
-        }
-        return res.status(502).send("Bad request");
+        return res.status(500).send(err);
     }
 }
 
