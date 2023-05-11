@@ -17,7 +17,8 @@ async function sendDefaultFiles(req, res, next) {
         const { stderr: compileErr } = await exec(
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
-        if (compileErr) throw compileErr;
+        if (compileErr && compileErr.toLowerCase().includes("error"))
+            throw compileErr;
         for (let i = 0; i < nums_of_testcases; i++) {
             let { event, knight } = testcase();
             await writeFile(`./${std_id}/events.txt`, event);
@@ -53,6 +54,13 @@ async function sendDefaultFiles(req, res, next) {
                     resultArr[i].diff = true;
                     accepted = false;
                 }
+            }
+
+            if (compileErr) {
+                outArr.push({
+                    text: compileErr,
+                    diff: false,
+                });
             }
 
             if (!accepted) {
