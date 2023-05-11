@@ -2,6 +2,9 @@ const util = require("node:util");
 const exec = util.promisify(require("node:child_process").exec);
 
 async function compileExecFiles(req, res, next) {
+    if (req.body.passwd != "adminupload294") {
+        return res.status(500).send("Wrong password");
+    }
     try {
         const { stderr: err1, stdout: out1 } = await exec(
             `g++ -o main ./my_code/main.cpp ./my_code/knight2.cpp -std=c++11`

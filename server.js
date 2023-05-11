@@ -44,9 +44,6 @@ const uploadCompile = multer({ storage: compileStorage });
 
 app.post("*", (req, res, next) => {
     if (req.path == "/compile") {
-        if (req.body.passwd != "adminupload294") {
-            return res.status(500).send("Wrong password");
-        }
         return uploadCompile.array("myFiles", 3)(req, res, next);
     } else {
         return upload.array("myFiles", 2)(req, res, next);
