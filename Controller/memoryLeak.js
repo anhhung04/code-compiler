@@ -48,10 +48,18 @@ async function sendMemoryLeakFiles(req, res, next) {
             leaked_test_cases: leaked_test_cases,
         });
     } catch (err) {
+        if (fs.existsSync("./" + std_id)) {
+            for (const file of fs.readdirSync(`./${std_id}`)) {
+                await unlink(path.join(`./${std_id}`, file));
+            }
+            await rmdir(`./${std_id}`, {
+                force: true,
+            });
+        }
         if (err.stderr) {
             return res.status(502).send(err.stderr);
         }
-        next(err);
+        return res.status(502).send("Bad request");
     }
 }
 

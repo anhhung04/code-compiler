@@ -77,6 +77,14 @@ async function sendDefaultFiles(req, res, next) {
             not_pass: not_pass,
         });
     } catch (err) {
+        if (fs.existsSync("./" + std_id)) {
+            for (const file of fs.readdirSync(`./${std_id}`)) {
+                await unlink(path.join(`./${std_id}`, file));
+            }
+            await rmdir(`./${std_id}`, {
+                force: true,
+            });
+        }
         if (err.stderr) {
             return res.status(502).send(err.stderr);
         }
