@@ -32,7 +32,6 @@ async function sendDefaultFiles(req, res, next) {
                 [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
             );
             if (resultErr) throw resultErr;
-            if (outErr) throw outErr;
 
             let accepted = true;
             let outArr = outOut.split("\n");
@@ -59,6 +58,13 @@ async function sendDefaultFiles(req, res, next) {
             if (compileErr) {
                 outArr.push({
                     text: compileErr,
+                    diff: false,
+                });
+            }
+
+            if (outErr) {
+                outArr.push({
+                    text: outErr,
                     diff: false,
                 });
             }
