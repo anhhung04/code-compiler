@@ -3,6 +3,7 @@ const fs = require("fs");
 const exec = util.promisify(require("node:child_process").exec);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
+const rmdir = util.promisify(fs.rmdir);
 const testcase = require("../Utils/generateTestcase");
 const path = require("path");
 function renderUploadFiles(req, res, next) {
