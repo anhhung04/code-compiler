@@ -4,6 +4,7 @@ const exec = util.promisify(require("node:child_process").exec);
 const writeFile = util.promisify(fs.writeFile);
 const testcase = require("../Utils/generateTestcase");
 const path = require("path");
+const { stderr } = require("node:process");
 function renderUploadFiles(req, res, next) {
     res.render("memoryLeak");
 }
@@ -15,7 +16,8 @@ async function sendMemoryLeakFiles(req, res, next) {
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
         if (compileErr) throw compileErr;
-        for (let i = 0; i < 3; i++) {
+        leaked_test_cases = [];
+        for (let i = 0; i < 5; i++) {
             let { event, knight } = testcase();
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
@@ -25,12 +27,22 @@ async function sendMemoryLeakFiles(req, res, next) {
                     `../${std_id}/main`
                 )} ./${std_id}/knights.txt ./${std_id}/events.txt`
             );
-            if (outErr) throw outErr;
-            res.render("result", {
-                not_pass_tests: 0,
-                not_pass: [],
-            });
+            if (!outErr.includes("All heap were freed")) {
+                leaked_test_cases.push({
+                    output: outOut,
+                    error: outErr,
+                });
+            }
         }
+        for (const file of fs.readdirSync(`./${std_id}`)) {
+            await unlink(path.join(`./${std_id}`, file));
+        }
+        await rmdir(`./${std_id}`, {
+            force: true,
+        });
+        res.render("resultMemoryLeak", {
+            leaked_test_cases: leaked_test_cases,
+        });
     } catch (err) {
         if (err.stderr) {
             return res.status(502).send(err.stderr);
