@@ -20,7 +20,7 @@ async function sendMemoryLeakFiles(req, res, next) {
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { stderr: outErr, stdout: outOut } = await exec(
-                `valgrind --tool-check=memcheck --leak-check=full ${path.join(
+                `valgrind --tool=memcheck --leak-check=full ${path.join(
                     __dirname,
                     `../${std_id}/main`
                 )} ./${std_id}/knights.txt ./${std_id}/events.txt`
