@@ -29,8 +29,10 @@ async function sendMemoryLeakFiles(req, res, next) {
                 )} ./${std_id}/knights.txt ./${std_id}/events.txt`
             );
 
-            if (!outErr.includes("All heap were freed")) {
+            if (!outErr.includes("All heap blocks were freed")) {
                 leaked_test_cases.push({
+                    event_input: event,
+                    knight_input: knight,
                     output: outOut,
                     error: outErr.split("\n").slice(6).join("\n"),
                 });
@@ -43,8 +45,6 @@ async function sendMemoryLeakFiles(req, res, next) {
             force: true,
         });
         res.render("resultMemoryLeak", {
-            event: event_input,
-            knight: knight_input,
             leaked_test_cases: leaked_test_cases,
         });
     } catch (err) {
