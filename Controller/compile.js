@@ -19,6 +19,11 @@ async function compileExecFiles(req, res, next) {
     }
 }
 
+function renderCompilePage(req, res, next) {
+    res.render("compile");
+}
+
 module.exports = {
     compileExecFiles,
+    renderCompilePage,
 };

@@ -1,8 +1,12 @@
 const { Router } = require("express");
-const { compileExecFiles } = require("../Controller/compile");
+const {
+    compileExecFiles,
+    renderCompilePage,
+} = require("../Controller/compile");
 
 const compileRouter = new Router();
 
-compileRouter.get("/", compileExecFiles);
+compileRouter.get("/", renderCompilePage);
+compileRouter.post("/", compileExecFiles);
 
 module.exports = compileRouter;

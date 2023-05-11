@@ -1,0 +1,15 @@
+<%- include("./partial/header"); %>
+<main>
+    <br>
+    <br>
+    <form action="/compile"  enctype="multipart/form-data" method="POST">
+        <br>
+        <label for="myFiles"> Select files:</label>
+        <input type="file" name="myFiles" multiple>
+        <br>
+        <input type="submit" value="Upload your files"/>
+    </form>
+    <br>
+    <br>
+</main>
+<%- include('./partial/footer'); %>

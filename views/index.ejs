@@ -9,9 +9,17 @@
         <br>
         <label for="myFiles"> Select files:</label>
         <input type="file" name="myFiles" multiple>
+        <input type="submit" value="Upload your files"/>
+        <br>
+        <br>
         <label for="debug">Cout event and index?</label>
         <input type="checkbox" name="debug" value="true">
-        <input type="submit" value="Upload your files"/>
+        <p>
+            If you choose this option, you have to add this code before calling printInfo function:
+        </p>
+        <code>
+            cout << "event: " << YOUR_EVENT_CODE_VARIABLE << " i = " << YOUR_EVENT_INDEX << " --- ";
+        </code>
     </form>
     <br>
     <br>

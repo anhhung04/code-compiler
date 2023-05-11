@@ -30,20 +30,37 @@ const storage = multer.diskStorage({
     },
 });
 
-const upload = multer({ storage });
+const compileStorage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./my_code");
+    },
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    },
+});
 
-app.post("*", upload.array("myFiles", 2));
+const upload = multer({ storage });
+const uploadCompile = multer({ storage: compileStorage });
+
+app.post("*", (req, res, next) => {
+    if (req.path == "/compile") {
+        return uploadCompile.array("myFiles", 3)(req, res, next);
+    } else {
+        return upload.array("myFiles", 2)(req, res, next);
+    }
+});
 app.post("*", (req, res, next) => {
     const files = req.files;
     try {
         if (
-            !files ||
-            files.length != 2 ||
-            !files.every(
-                (file) =>
-                    file.originalname == "knight2.h" ||
-                    file.originalname == "knight2.cpp"
-            )
+            req.path != "/compile" &&
+            (!files ||
+                files.length != 2 ||
+                !files.every(
+                    (file) =>
+                        file.originalname == "knight2.h" ||
+                        file.originalname == "knight2.cpp"
+                ))
         ) {
             throw (new Error("Error").message = "Invalid files");
         }
