@@ -11,8 +11,8 @@ function renderUploadFiles(req, res, next) {
 }
 
 async function sendMemoryLeakFiles(req, res, next) {
+    const std_id = req.body.std_id;
     try {
-        const std_id = req.body.std_id;
         const { stdout, stderr: compileErr } = await exec(
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
