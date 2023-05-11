@@ -3,7 +3,7 @@
     <% if(leaked_test_cases == 0) { %>
     <h1>Passed all.</h1>
     <% }else{ %>
-    <h1>Number of memory leak test cases: <%= not_pass_tests %></h1>
+    <h1>Number of memory leak test cases: <%= leaked_test_cases.length %></h1>
     <div class="table-reponsive box" style="white-space: pre-line">
         <table id="example" class="table table-striped table-bordered">
             <thead>
