@@ -10,8 +10,15 @@ const testcase = require("../Utils/generateTestcase");
 const path = require("path");
 
 async function sendDefaultFiles(req, res, next) {
-    const nums_of_testcases = 100;
-    const { std_id, debug } = req.body;
+    const {
+        std_id,
+        debug,
+        max_testcases,
+        max_events,
+        max_knights,
+        max_phoenix,
+        max_antidote,
+    } = req.body;
     let not_pass = [];
     try {
         const { stderr: compileErr } = await exec(
@@ -19,8 +26,13 @@ async function sendDefaultFiles(req, res, next) {
         );
         if (compileErr && compileErr.toLowerCase().includes("error"))
             throw compileErr;
-        for (let i = 0; i < nums_of_testcases; i++) {
-            let { event, knight } = testcase();
+        for (let i = 0; i < max_testcases; i++) {
+            let { event, knight } = testcase({
+                max_events,
+                max_knights,
+                max_phoenix,
+                max_antidote,
+            });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { stderr: resultErr, stdout: resultOut } = await execFile(

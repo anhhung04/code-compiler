@@ -19,7 +19,12 @@ async function sendMemoryLeakFiles(req, res, next) {
         
         leaked_test_cases = [];
         for (let i = 0; i < 5; i++) {
-            let { event, knight } = testcase();
+            let { event, knight } = testcase({
+                max_events,
+                max_knights,
+                max_phoenix,
+                max_antidote,
+            });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { stderr: outErr, stdout: outOut } = await exec(
