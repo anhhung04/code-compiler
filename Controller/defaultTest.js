@@ -97,13 +97,11 @@ async function sendDefaultFiles(req, res, next) {
         await rmdir(`./${std_id}`, {
             force: true,
         });
-        console.log(not_pass);
         res.render("result", {
             not_pass_tests: not_pass.length,
             not_pass: not_pass,
         });
     } catch (err) {
-        console.log(err);
         if (fs.existsSync("./" + std_id)) {
             for (const file of fs.readdirSync(`./${std_id}`)) {
                 await unlink(path.join(`./${std_id}`, file));
