@@ -26,7 +26,7 @@ module.exports = function ({
     let knight = nums_knight + "\n";
     let game_events = [];
     let knights = [];
-    for (let i = 0; i < nums_events; i++)
+    for (let i = 0; i < nums_events-1; i++)
         game_events.push(events[rand(events.length - 1)]);
     for (let i = 0; i < nums_knight; i++)
         knights.push(
