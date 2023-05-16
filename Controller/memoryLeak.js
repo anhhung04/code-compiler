@@ -35,10 +35,10 @@ async function sendMemoryLeakFiles(req, res, next) {
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { stderr: outErr, stdout: outOut } = await spawn(
-                `valgrind --leak-check=full ${path.join(
+                `valgrind`[`--leak-check=full`, `${path.join(
                     __dirname,
                     `../${std_id}/main`
-                )} ./${std_id}/knights.txt ./${std_id}/events.txt`
+                )}`, `./${std_id}/knights.txt` `./${std_id}/events.txt`]
             );
 
             if (!outErr.includes("All heap blocks were freed")) {
