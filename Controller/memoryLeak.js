@@ -1,13 +1,30 @@
 const util = require("node:util");
 const fs = require("fs");
-const spawn = util.promisify(require("node:child_process").spawn);
+const spawn = node("child_process").spawn;
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
 const rmdir = util.promisify(fs.rmdir);
 const testcase = require("../Utils/generateTestcase");
 const path = require("path");
+const { exec } = require("node:child_process");
 function renderUploadFiles(req, res, next) {
     res.render("memoryLeak");
+}
+
+async function spawnAsync(arg, args) {
+    const child = spawn(arg, args);
+    let data = "";
+    for await (const chunk of child.stdout) {
+        data += chunk;
+    }
+    let error = "";
+    for await (const chunk of child.stderr) {
+        error += chunk;
+    }
+    const exitCode = await new Promise((resolve, reject) => {
+        child.on('close', resolve);
+    });
+    return { stout: data, stderr: error, exitCode };
 }
 
 async function sendMemoryLeakFiles(req, res, next) {
@@ -20,7 +37,7 @@ async function sendMemoryLeakFiles(req, res, next) {
         max_antidote,
     } = req.body;
     try {
-        const { stdout, stderr: compileErr } = await spawn(
+        const { stdout, stderr: compileErr } = await exec(
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
 
@@ -34,7 +51,7 @@ async function sendMemoryLeakFiles(req, res, next) {
             });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
-            const { stderr: outErr, stdout: outOut } = await spawn(
+            const { stderr: outErr, stdout: outOut } = await spawnAsync(
                 `valgrind`[`--leak-check=full`, `${path.join(
                     __dirname,
                     `../${std_id}/main`
