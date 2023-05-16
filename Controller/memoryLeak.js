@@ -1,12 +1,12 @@
 const util = require("node:util");
 const fs = require("fs");
-const spawn = node("child_process").spawn;
+const spawn = require("child_process").spawn;
+const exec = util.promisify(require("node:child_process").exec);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
 const rmdir = util.promisify(fs.rmdir);
 const testcase = require("../Utils/generateTestcase");
 const path = require("path");
-const { exec } = require("node:child_process");
 function renderUploadFiles(req, res, next) {
     res.render("memoryLeak");
 }
