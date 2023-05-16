@@ -71,6 +71,7 @@ async function sendMemoryLeakFiles(req, res, next) {
                 force: true,
             });
         }
+        if(err?.code === 139) return res.json(500).send("Segmentation fault");
         return res.status(500).send(err);
     }
 }
