@@ -1,6 +1,5 @@
 const util = require("node:util");
 const fs = require("fs");
-const spawn = require("child_process").spawn;
 const exec = util.promisify(require("node:child_process").exec);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
@@ -9,22 +8,6 @@ const testcase = require("../Utils/generateTestcase");
 const path = require("path");
 function renderUploadFiles(req, res, next) {
     res.render("memoryLeak");
-}
-
-async function spawnAsync(arg, args) {
-    const child = spawn(arg, args);
-    let data = "";
-    for await (const chunk of child.stdout) {
-        data += chunk;
-    }
-    let error = "";
-    for await (const chunk of child.stderr) {
-        error += chunk;
-    }
-    const exitCode = await new Promise((resolve, reject) => {
-        child.on('close', resolve);
-    });
-    return { stout: data, stderr: error, exitCode };
 }
 
 async function sendMemoryLeakFiles(req, res, next) {
@@ -51,11 +34,11 @@ async function sendMemoryLeakFiles(req, res, next) {
             });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
-            const { stderr: outErr, stdout: outOut } = await spawnAsync(
-                `valgrind`, [`--leak-check=full`, `${path.join(
+            const { stderr: outErr, stdout: outOut } = await exec(
+                `valgrind --leak-check=ful ${path.join(
                     __dirname,
                     `../${std_id}/main`
-                )}`, `./${std_id}/knights.txt` `./${std_id}/events.txt`]
+                )} ./${std_id}/knights.txt ./${std_id}/events.txt`
             );
 
             if (!outErr.includes("All heap blocks were freed")) {
