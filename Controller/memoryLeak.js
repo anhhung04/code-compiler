@@ -1,6 +1,6 @@
 const util = require("node:util");
 const fs = require("fs");
-const exec = util.promisify(require("node:child_process").exec);
+const spawn = util.promisify(require("node:child_process").spawn);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
 const rmdir = util.promisify(fs.rmdir);
@@ -20,7 +20,7 @@ async function sendMemoryLeakFiles(req, res, next) {
         max_antidote,
     } = req.body;
     try {
-        const { stdout, stderr: compileErr } = await exec(
+        const { stdout, stderr: compileErr } = await spawn(
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
 
@@ -34,7 +34,7 @@ async function sendMemoryLeakFiles(req, res, next) {
             });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
-            const { stderr: outErr, stdout: outOut } = await exec(
+            const { stderr: outErr, stdout: outOut } = await spawn(
                 `valgrind --leak-check=full ${path.join(
                     __dirname,
                     `../${std_id}/main`
