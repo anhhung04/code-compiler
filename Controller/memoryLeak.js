@@ -56,6 +56,7 @@ function runValgrindUserCode(user_id) {
         worker.on("message", (data) => {
             let output = data.stdout;
             let errArr = data.stderr?.split("\n");
+            for (let err of errArr) err = err?.trim().replace("\n", "").replace("\r", "")
             if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
             res({ output, error: errArr?.slice(errArr.findIndex(e => e.includes("HEAP SUMMARY"))).join("\n") });
         });
@@ -75,8 +76,8 @@ async function sendMemoryLeakFiles(req, res, next) {
     } = req.body;
     const std_id = req.std_id;
     try {
-        const userCompileOutput = await compileUserCode(std_id);
         leaked_test_cases = [];
+        const userCompileOutput = await compileUserCode(std_id);
         for (let i = 0; i < max_testcases; i++) {
             let { event, knight } = testcase({
                 max_events,
@@ -87,12 +88,12 @@ async function sendMemoryLeakFiles(req, res, next) {
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
             const { output: userOutput, error } = await runValgrindUserCode(std_id);
-            if (!userOutput?.includes("All heap blocks were freed")) {
+            if (!error?.includes("All heap blocks were freed")) {
                 leaked_test_cases.push({
                     event_input: event,
                     knight_input: knight,
-                    output: outOut,
-                    error: userCompileOutput + "\n" + error,
+                    output: userOutput,
+                    error: error + "\n" + userCompileOutput,
                 });
             }
         }
