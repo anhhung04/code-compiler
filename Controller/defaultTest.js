@@ -1,17 +1,86 @@
-const util = require("node:util");
-const fs = require("node:fs");
+const util = require("util");
+const fs = require("fs");
+const path = require("path");
+const { Worker } = require("worker_threads");
 const writeFile = util.promisify(fs.writeFile);
-const execFile = util.promisify(require("node:child_process").execFile);
-const exec = util.promisify(require("node:child_process").exec);
 const rmdir = util.promisify(fs.rmdir);
 const unlink = util.promisify(fs.unlink);
 const testcase = require("../Utils/generateTestcase");
-//const readFile = util.promisify(fs.readFile);
-const path = require("path");
+
+function compileUserCode(user_id) {
+    return new Promise((res, rej) => {
+        const worker = new Worker("./Utils/runCommand.js", {
+            workerData: {
+                command: "g++",
+                args: [
+                    "-o",
+                    `./${user_id}/main`,
+                    `./${user_id}/main.cpp`,
+                    `./${user_id}/knight2.cpp`,
+                    "-std=c++11",
+                ],
+                options: {}
+            }
+        });
+        worker.on("message", (data) => {
+            let output = data.stdout;
+            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
+            res({ output, error: data.stderr });
+        });
+        worker.on("error", (msg) => {
+            rej(`An error ocurred: ${msg}`);
+        });
+    });
+}
+
+function runCode(debug, user_id) {
+    return new Promise((res, rej) => {
+        const worker = new Worker("./Utils/runCommand.js", {
+            workerData: {
+                command: `./main${debug ? "Debug" : ""}`,
+                args: [
+                    `./${user_id}/knights.txt`,
+                    `./${user_id}/events.txt`,
+                ],
+                options: {}
+            }
+        });
+        worker.on("message", (data) => {
+            let output = data.stdout + "\n" + data.stderr;
+            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
+            res(output);
+        });
+        worker.on("error", (msg) => {
+            rej(`An error ocurred: ${msg}`);
+        });
+    });
+}
+
+function runUserCode(user_id) {
+    return new Promise((res, rej) => {
+        const worker = new Worker("./Utils/runCommand.js", {
+            workerData: {
+                command: `./${user_id}/main`,
+                args: [
+                    `./${user_id}/knights.txt`,
+                    `./${user_id}/events.txt`,
+                ],
+                options: {},
+            }
+        });
+        worker.on("message", (data) => {
+            let output = data.stdout + "\n" + data.stderr;
+            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
+            res(output);
+        });
+        worker.on("error", (msg) => {
+            rej(`An error ocurred: ${msg}`);
+        });
+    });
+}
 
 async function sendDefaultFiles(req, res, next) {
     const {
-        std_id,
         debug,
         max_testcases,
         max_events,
@@ -19,13 +88,11 @@ async function sendDefaultFiles(req, res, next) {
         max_phoenix,
         max_antidote,
     } = req.body;
+    const std_id = req.std_id;
     let not_pass = [];
     try {
-        const { stderr: compileErr } = await exec(
-            `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
-        );
-        if (compileErr && compileErr.toLowerCase().includes("error"))
-            throw compileErr;
+        const compileErr = await compileUserCode(std_id);
+        if (compileErr.error) throw compileErr.error;
         for (let i = 0; i < max_testcases; i++) {
             let { event, knight } = testcase({
                 max_events,
@@ -35,29 +102,19 @@ async function sendDefaultFiles(req, res, next) {
             });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
-            const { stderr: resultErr, stdout: resultOut } = await execFile(
-                path.join(__dirname, `../main${debug ? "Debug" : ""}`),
-                [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
-            );
-            const { stderr: outErr, stdout: outOut } = await execFile(
-                path.join(__dirname, "../" + std_id + "/main"),
-                [`./${std_id}/knights.txt`, `./${std_id}/events.txt`]
-            );
-            if (resultErr) throw resultErr;
-
+            const [resultOutput, userOutput] = await Promise.all([runCode(debug, std_id), runUserCode(std_id)]);
             let accepted = true;
-            let outArr = outOut.split("\n");
-            let resultArr = resultOut.split("\n");
+            let outArr = userOutput.split("\n");
+            let resultArr = resultOutput.split("\n");
             for (let i = 0; i < outArr.length; i++) {
+                if (outArr[i]) outArr[i] = outArr[i].trim().replace("\r", "").replace("\n", "");
                 outArr[i] = {
-                    text: outArr[i]?.trim().replace("\r", "").replace("\n", ""),
+                    text: outArr[i],
                     diff: false,
                 };
+                if (resultArr[i]) resultArr[i] = resultArr[i].trim().replace("\r", "").replace("\n", "");
                 resultArr[i] = {
-                    text: resultArr[i]
-                        ?.trim()
-                        .replace("\r", "")
-                        .replace("\n", ""),
+                    text: resultArr[i],
                     diff: false,
                 };
                 if (outArr[i].text != resultArr[i].text) {
@@ -65,20 +122,6 @@ async function sendDefaultFiles(req, res, next) {
                     resultArr[i].diff = true;
                     accepted = false;
                 }
-            }
-
-            if (compileErr) {
-                outArr.push({
-                    text: compileErr,
-                    diff: false,
-                });
-            }
-
-            if (outErr) {
-                outArr.push({
-                    text: outErr,
-                    diff: false,
-                });
             }
 
             if (!accepted) {

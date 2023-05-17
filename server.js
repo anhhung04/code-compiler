@@ -1,8 +1,10 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const multer = require("multer");
 const fs = require("fs");
+const md5 = require("md5");
 const path = require("path");
+const bodyParser = require("body-parser");
+
 
 const defaultTestRouter = require("./Router/defaultTest");
 const compileRouter = require("./Router/compile");
@@ -19,11 +21,12 @@ app.set("view engine", "ejs");
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        if (!fs.existsSync("./" + req.body.std_id))
-            fs.mkdirSync("./" + req.body.std_id);
-        fs.copyFileSync("./main.cpp", "./" + req.body.std_id + "/main.cpp");
-        fs.copyFileSync("./main.h", "./" + req.body.std_id + "/main.h");
-        cb(null, "./" + req.body.std_id);
+        if (!fs.existsSync("./" + req.std_id)) {
+            fs.mkdirSync("./" + req.std_id);
+        }
+        fs.copyFileSync("./compileCode/main.cpp", "./" + req.std_id + "/main.cpp");
+        fs.copyFileSync("./compileCode/main.h", "./" + req.std_id + "/main.h");
+        cb(null, "./" + req.std_id);
     },
     filename: function (req, file, cb) {
         cb(null, file.originalname);
@@ -43,6 +46,8 @@ const upload = multer({ storage });
 const uploadCompile = multer({ storage: compileStorage });
 
 app.post("*", (req, res, next) => {
+    const std_id = md5(req.body.std_id + Date.now().toString()).slice(0, 20);
+    req.std_id = std_id;
     if (req.path == "/compile") {
         return uploadCompile.array("myFiles", 3)(req, res, next);
     } else {
@@ -66,13 +71,13 @@ app.post("*", (req, res, next) => {
         }
     } catch (err) {
         next(err);
-    }
+    }   
     next();
 });
 
-app.use("/defaultTest", defaultTestRouter);
-app.use("/compile", compileRouter);
 app.use("/", defaultRouter);
+app.use("/compile", compileRouter);
+app.use("/defaultTest", defaultTestRouter);
 app.use("/memoryLeak", memoryLeakRouter);
 
 app.listen(process.env.PORT || 3000, () =>

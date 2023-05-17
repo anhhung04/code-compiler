@@ -1,5 +1,7 @@
-const util = require("node:util");
-const exec = util.promisify(require("node:child_process").exec);
+const fs = require("fs");
+const util = require("util");
+const unlink = util.promisify(fs.unlink);
+const exec = util.promisify(require("child_process").exec);
 
 async function compileExecFiles(req, res, next) {
     if (req.body.passwd != "adminupload294") {
@@ -12,6 +14,9 @@ async function compileExecFiles(req, res, next) {
         const { stderr: err2, stdout: out2 } = await exec(
             `g++ -o mainDebug ./my_code/main.cpp ./my_code/knight2Debug.cpp  -std=c++11`
         );
+        await unlink("./my_code/knight2.cpp");
+        await unlink("./my_code/knight2Debug.cpp");
+        await unlink("./my_code/knight2.h");
         if (err1 || err2) throw [err1, err2];
         res.send({
             stdout: [out1, out2],

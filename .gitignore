@@ -1,2 +1,5 @@
 /node_modules
 /.vscode
+/my_code/knight2.cpp
+/my_code/knight2.h
+/my_code/knight2Debug.cpp

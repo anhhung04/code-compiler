@@ -1,29 +1,81 @@
-const util = require("node:util");
+const util = require("util");
 const fs = require("fs");
-const exec = util.promisify(require("node:child_process").exec);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
 const rmdir = util.promisify(fs.rmdir);
 const testcase = require("../Utils/generateTestcase");
+const { Worker } = require("worker_threads");
 const path = require("path");
 function renderUploadFiles(req, res, next) {
     res.render("memoryLeak");
 }
 
+function compileUserCode(user_id) {
+    return new Promise((res, rej) => {
+        const worker = new Worker("./Utils/runCommand.js", {
+            workerData: {
+                command: "g++",
+                args: [
+                    "-o",
+                    `./${user_id}/main`,
+                    `./${user_id}/main.cpp`,
+                    `./${user_id}/knight2.cpp`,
+                    "-std=c++11",
+                ],
+                options: {}
+            }
+        });
+        worker.on("message", (data) => {
+            let output = data.stdout + "\n" + data.stderr;
+            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
+            res(output);
+        });
+        worker.on("error", (msg) => {
+            rej(`An error ocurred: ${msg}`);
+        });
+    });
+}
+
+function runValgrindUserCode(user_id) {
+    return new Promise((res, rej) => {
+        const worker = new Worker("./Utils/runCommand.js", {
+            workerData: {
+                command: `valgrind`,
+                args: [
+                    `--leak-check=full`,
+                    `${path.join(
+                        __dirname,
+                        `../${user_id}/main`)
+                    }`,
+                    `./${user_id}/knights.txt`,
+                    `./${user_id}/events.txt`,
+                ],
+                options: {}
+            }
+        });
+        worker.on("message", (data) => {
+            let output = data.stdout;
+            let errArr = data.stderr?.split("\n");
+            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
+            res({ output, error: errArr?.slice(errArr.findIndex(e => e.includes("HEAP SUMMARY"))).join("\n") });
+        });
+        worker.on("error", (msg) => {
+            rej(`An error ocurred: ${msg}`);
+        });
+    });
+}
+
 async function sendMemoryLeakFiles(req, res, next) {
     const {
-        std_id,
         max_testcases,
         max_events,
         max_knights,
         max_phoenix,
         max_antidote,
     } = req.body;
+    const std_id = req.std_id;
     try {
-        const { stdout, stderr: compileErr } = await exec(
-            `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
-        );
-
+        const userCompileOutput = await compileUserCode(std_id);
         leaked_test_cases = [];
         for (let i = 0; i < max_testcases; i++) {
             let { event, knight } = testcase({
@@ -34,22 +86,13 @@ async function sendMemoryLeakFiles(req, res, next) {
             });
             await writeFile(`./${std_id}/events.txt`, event);
             await writeFile(`./${std_id}/knights.txt`, knight);
-            const { stderr: outErr, stdout: outOut } = await exec(
-                `valgrind --leak-check=full ${path.join(
-                    __dirname,
-                    `../${std_id}/main`
-                )} ./${std_id}/knights.txt ./${std_id}/events.txt`
-            );
-
-            if (!outErr.includes("All heap blocks were freed")) {
+            const { output: userOutput, error } = await runValgrindUserCode(std_id);
+            if (!userOutput?.includes("All heap blocks were freed")) {
                 leaked_test_cases.push({
                     event_input: event,
                     knight_input: knight,
                     output: outOut,
-                    error:
-                        compileErr +
-                        "\n" +
-                        outErr.split("\n").slice(4).join("\n"),
+                    error: userCompileOutput + "\n" + error,
                 });
             }
         }
@@ -71,7 +114,6 @@ async function sendMemoryLeakFiles(req, res, next) {
                 force: true,
             });
         }
-        if(err?.code === 139) return res.json(500).send("Segmentation fault");
         return res.status(500).send(err);
     }
 }
