@@ -28,17 +28,16 @@ async function customInputTest(req, res) {
                 text: outArr[i],
                 diff: false,
             };
+        }
+        for (let i = 0; i < resultArr.length; i++) {
             if (resultArr[i]) resultArr[i] = resultArr[i].trim().replace("\r", "").replace("\n", "");
             resultArr[i] = {
                 text: resultArr[i],
                 diff: false,
             };
-            if (outArr[i].text != resultArr[i].text) {
-                outArr[i].diff = true;
-                resultArr[i].diff = true;
-                accepted = false;
-            }
         }
+
+        accepted = outArr.length == resultArr.length && resultArr.every((v, i) => v.text === outArr[i].text);
 
         if (!accepted) {
             not_pass.push({
