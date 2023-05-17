@@ -50,12 +50,12 @@ async function sendDefaultFiles(req, res, next) {
             let resultArr = resultOut.split("\n");
             for (let i = 0; i < outArr.length; i++) {
                 outArr[i] = {
-                    text: outArr[i].trim().replace("\r", "").replace("\n", ""),
+                    text: outArr[i]?.trim().replace("\r", "").replace("\n", ""),
                     diff: false,
                 };
                 resultArr[i] = {
                     text: resultArr[i]
-                        .trim()
+                        ?.trim()
                         .replace("\r", "")
                         .replace("\n", ""),
                     diff: false,
@@ -97,7 +97,6 @@ async function sendDefaultFiles(req, res, next) {
         await rmdir(`./${std_id}`, {
             force: true,
         });
-        //console.log(not_pass);
         res.render("result", {
             not_pass_tests: not_pass.length,
             not_pass: not_pass,

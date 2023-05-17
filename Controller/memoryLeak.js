@@ -11,14 +11,21 @@ function renderUploadFiles(req, res, next) {
 }
 
 async function sendMemoryLeakFiles(req, res, next) {
-    const std_id = req.body.std_id;
+    const {
+        std_id,
+        max_testcases,
+        max_events,
+        max_knights,
+        max_phoenix,
+        max_antidote,
+    } = req.body;
     try {
         const { stdout, stderr: compileErr } = await exec(
             `g++ -o ./${std_id}/main ./${std_id}/main.cpp ./${std_id}/knight2.cpp -std=c++11`
         );
-        
+
         leaked_test_cases = [];
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < max_testcases; i++) {
             let { event, knight } = testcase({
                 max_events,
                 max_knights,
@@ -64,6 +71,7 @@ async function sendMemoryLeakFiles(req, res, next) {
                 force: true,
             });
         }
+        if(err?.code === 139) return res.json(500).send("Segmentation fault");
         return res.status(500).send(err);
     }
 }
