@@ -37,9 +37,36 @@ async function customInputTest(req, res) {
             };
         }
 
-        accepted = outArr.length == resultArr.length && resultArr.every((v, i) => v.text === outArr[i].text);
-
+        if (outArr.length != resultArr.length) {
+            accepted = false;
+            let m = Math.min(outArr.length, resultArr.length);
+            for (let i = m; i < outArr.length; i++) {
+                if (outArr[i].text != resultArr[i].test) {
+                    outArr[i].diff = true;
+                    resultArr[i].diff = true;
+                }
+            }
+            if (outArr.length > resultArr.length) {
+                for (let i = m; i < outArr.length; i++) {
+                    outArr[i].diff = true;
+                }
+            } else {
+                for (let i = m; i < resultArr.length; i++) {
+                    resultArr[i].diff = true;
+                }
+            }
+        } else {
+            for (let i = 0; i < resultArr.length; i++) {
+                if (resultArr[i].text != outArr[i].text) {
+                    resultArr[i].diff = true;
+                    outArr[i].diff = true;
+                    accepted = false;
+                }
+            }
+        }
         if (!accepted) {
+
+
             not_pass.push({
                 knight_input: knight,
                 event_input: event,
