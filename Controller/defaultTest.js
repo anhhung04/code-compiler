@@ -42,7 +42,9 @@ function runCode(debug, user_id) {
                     `./${user_id}/knights.txt`,
                     `./${user_id}/events.txt`,
                 ],
-                options: {}
+                options: {
+                    maxBuffer: 1024 * 1024 * 1024,
+                }
             }
         });
         worker.on("message", (data) => {
@@ -65,7 +67,9 @@ function runUserCode(user_id) {
                     `./${user_id}/knights.txt`,
                     `./${user_id}/events.txt`,
                 ],
-                options: {},
+                options: {
+                    maxBuffer: 1024 * 1024 * 1024,
+                },
             }
         });
         worker.on("message", (data) => {
