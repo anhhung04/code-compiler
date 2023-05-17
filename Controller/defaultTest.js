@@ -128,8 +128,8 @@ async function sendDefaultFiles(req, res, next) {
             if (outArr.length != resultArr.length) {
                 accepted = false;
                 let m = Math.min(outArr.length, resultArr.length);
-                for (let i = m; i < outArr.length; i++) {
-                    if (outArr[i].text != resultArr[i].test) {
+                for (let i = 0; i < m; i++) {
+                    if (outArr[i].text != resultArr[i].text) {
                         outArr[i].diff = true;
                         resultArr[i].diff = true;
                     }
