@@ -1,0 +1,32 @@
+<%- include("./partial/header"); %>
+<main>
+    <br>
+    <br>
+    <form action="/customInput"  enctype="multipart/form-data" method="POST">
+        <label for="std_id">MSSV</label>
+        <input type="text" name="std_id">
+        <br>
+        <br>
+        <label for="myFiles"> Select files:</label>
+        <input type="file" name="myFiles" multiple>
+        <br>
+        <br>
+        <label for="debug">Cout event and index?</label>
+        <input type="checkbox" name="debug" value="true">
+        <p>
+            If you choose this option, you have to add this code before calling printInfo function:
+        </p>
+        <code>
+            cout << "event: " << YOUR_EVENT_CODE_VARIABLE << " i = " << YOUR_EVENT_INDEX << " --- ";
+        </code>
+        <h6>Custom inputs: </h6>
+        <label for="event">Events: </label><br>
+        <textarea name="event" id="event" cols="90" rows="3 "></textarea><br>
+        <label for="knight">Knights: </label><br>
+        <textarea name="knight" id="knight" cols="90" rows="20"></textarea><br><br>
+        <input type="submit" value="Upload your files"/>
+    </form>
+    <br>
+    <br>
+</main>
+<%- include('./partial/footer'); %>

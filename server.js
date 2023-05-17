@@ -10,6 +10,7 @@ const defaultTestRouter = require("./Router/defaultTest");
 const compileRouter = require("./Router/compile");
 const defaultRouter = require("./Router/index");
 const memoryLeakRouter = require("./Router/memoryLeak");
+const customInputRouter = require("./Router/customInput");
 
 const app = express();
 //CREATE EXPRESS APP
@@ -79,6 +80,7 @@ app.use("/", defaultRouter);
 app.use("/compile", compileRouter);
 app.use("/defaultTest", defaultTestRouter);
 app.use("/memoryLeak", memoryLeakRouter);
+app.use("/customInput", customInputRouter);
 
 app.listen(process.env.PORT || 3000, () =>
     console.log(`Server started on port ${process.env.PORT || 3000}`)

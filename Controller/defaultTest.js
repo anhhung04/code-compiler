@@ -135,7 +135,7 @@ async function sendDefaultFiles(req, res, next) {
         }
 
         for (const file of fs.readdirSync(`./${std_id}`)) {
-            await unlink(path.join(`./${std_id}`, file));
+            await unlink(path.join(__dirname, `../${std_id}`, file));
         }
         await rmdir(`./${std_id}`, {
             force: true,
@@ -145,6 +145,7 @@ async function sendDefaultFiles(req, res, next) {
             not_pass: not_pass,
         });
     } catch (err) {
+        console.log(err);
         if (fs.existsSync("./" + std_id)) {
             for (const file of fs.readdirSync(`./${std_id}`)) {
                 await unlink(path.join(`./${std_id}`, file));
@@ -159,4 +160,7 @@ async function sendDefaultFiles(req, res, next) {
 
 module.exports = {
     sendDefaultFiles,
+    runCode,
+    runUserCode,
+    compileUserCode
 };
