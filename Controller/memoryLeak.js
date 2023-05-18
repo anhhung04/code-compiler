@@ -43,6 +43,7 @@ function runValgrindUserCode(user_id) {
                 command: `valgrind`,
                 args: [
                     `--leak-check=full`,
+                    "--show-leak-kinds=all",
                     `${path.join(
                         __dirname,
                         `../${user_id}/main`)
