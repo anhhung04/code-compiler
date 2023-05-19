@@ -19,6 +19,9 @@ async function customInputTest(req, res) {
         await writeFile(`./${std_id}/events.txt`, event);
         await writeFile(`./${std_id}/knights.txt`, knight);
         const [resultOutput, userOutput] = await Promise.all([runCode(debug, std_id), runUserCode(std_id)]);
+        console.log("🚀 ~ file: customInput.js:22 ~ customInputTest ~ userOutput:", userOutput);
+        console.log("🚀 ~ file: customInput.js:22 ~ customInputTest ~ resultOutput:", resultOutput)
+
         let accepted = true;
         let outArr = userOutput.split("\n");
         let resultArr = resultOutput.split("\n");
@@ -65,8 +68,6 @@ async function customInputTest(req, res) {
             }
         }
         if (!accepted) {
-
-
             not_pass.push({
                 knight_input: knight,
                 event_input: event,
