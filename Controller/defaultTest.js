@@ -19,12 +19,14 @@ function compileUserCode(user_id) {
                     `./${user_id}/knight2.cpp`,
                     "-std=c++11",
                 ],
-                options: {}
+                options: {
+                    timeout: 2000
+                }
             }
         });
         worker.on("message", (data) => {
+            if (data.code == 139 || data.code == 11 || data.signal == "SIGSEGV") data.stdoutput += "\nSegmentation fault";
             let output = data.stdout;
-            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
             res({ output, error: data.stderr });
         });
         worker.on("error", (msg) => {
@@ -44,12 +46,13 @@ function runCode(debug, user_id) {
                 ],
                 options: {
                     maxBuffer: 1024 * 1024 * 1024,
+                    timeout: 5000
                 }
             }
         });
         worker.on("message", (data) => {
+            if (data.code == 139 || data.code == 11 || data.signal == "SIGSEGV") data.stdout += "\nSegmentation fault";
             let output = data.stdout + "\n" + data.stderr;
-            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
             res(output);
         });
         worker.on("error", (msg) => {
@@ -69,12 +72,14 @@ function runUserCode(user_id) {
                 ],
                 options: {
                     maxBuffer: 1024 * 1024 * 1024,
+                    timeout: 5000
                 },
             }
         });
         worker.on("message", (data) => {
+            if (data.code == 139 || data.code == 11 || data.signal == "SIGSEGV") data.stdout += "\nSegmentation fault";
+            if (data.signal == "SIGTERM") data.stdout += "\nTime limit exceeded";
             let output = data.stdout + "\n" + data.stderr;
-            if (data.code == 139 || data.code == 11) output += "\nSegmentation fault";
             res(output);
         });
         worker.on("error", (msg) => {
