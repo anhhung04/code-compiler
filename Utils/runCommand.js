@@ -13,6 +13,6 @@ child.stderr.on("data", (chunk) => {
     error += chunk;
 });
 
-child.on("close", (code) => {
-    parentPort.postMessage({ code, stdout: data, stderr: error });
+child.on("close", (code, signal) => {
+    parentPort.postMessage({ code, stdout: data, stderr: error, signal });
 });
