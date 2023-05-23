@@ -46,7 +46,7 @@ function runCode(debug, user_id) {
                 ],
                 options: {
                     maxBuffer: 1024 * 1024 * 1024,
-                    timeout: 5000
+                    timeout: 1000
                 }
             }
         });
@@ -72,7 +72,7 @@ function runUserCode(user_id) {
                 ],
                 options: {
                     maxBuffer: 1024 * 1024 * 1024,
-                    timeout: 5000
+                    timeout: 1000
                 },
             }
         });
